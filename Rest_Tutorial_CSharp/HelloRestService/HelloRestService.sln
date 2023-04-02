@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1705.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloRestService", "HelloRestService.csproj", "{90231AAD-54A7-4FAF-86B0-7B7927CE7E9F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90231AAD-54A7-4FAF-86B0-7B7927CE7E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90231AAD-54A7-4FAF-86B0-7B7927CE7E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90231AAD-54A7-4FAF-86B0-7B7927CE7E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90231AAD-54A7-4FAF-86B0-7B7927CE7E9F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {23BF080F-D86E-43A1-A651-8A2599ABEFFA}
+	EndGlobalSection
+EndGlobal
