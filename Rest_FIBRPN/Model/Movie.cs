@@ -2,22 +2,22 @@
 
 namespace Rest_FIBRPN
 {
-    [DataContract]
+    [DataContract] // FIXME: Hogyan kapcsoljuk be a szerializálást
     public struct Movie
     {
         [DataMember]
-        public string Id;
+        public int Id { get; set; }
 
         [DataMember]
-        public string Title;
+        public string Title { get; set; }
 
         [DataMember]
-        public int Year;
+        public int Year { get; set; }
 
         [DataMember]
-        public string Director;
+        public string Director { get; set; }
 
         [DataMember]
-        public string[] Actor;
+        public string[] Actor { get; set; }
     }
 }
