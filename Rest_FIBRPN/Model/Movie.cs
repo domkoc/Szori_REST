@@ -2,11 +2,21 @@
 
 namespace Rest_FIBRPN
 {
-    [DataContract] // FIXME: Hogyan kapcsoljuk be a szerializálást
-    public struct Movie
+    static class IdGenerator
+    {
+        private static int LastId = -1;
+        public static int GetNextId()
+        {
+            LastId++;
+            return LastId;
+        }
+    }
+
+    [DataContract]
+    public class Movie
     {
         [DataMember]
-        public int Id { get; set; }
+        public int Id { get; set; } = IdGenerator.GetNextId();
 
         [DataMember]
         public string Title { get; set; }
@@ -18,6 +28,6 @@ namespace Rest_FIBRPN
         public string Director { get; set; }
 
         [DataMember]
-        public string[] Actor { get; set; }
+        public string[] Actor { get; set; } = new string[0];
     }
 }

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Xml.Linq;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Rest_FIBRPN
 {
@@ -11,7 +13,7 @@ namespace Rest_FIBRPN
     [Route("Rest_NEPTUN/resources/[controller]")]
     public class MovieDatabaseController : Controller
     {
-        private static List<Movie> movies = new List<Movie>();
+        private static List<Movie> Movies { get; set; } = new List<Movie>();
 
         [HttpGet]
         [Route("sayHello")]
@@ -20,54 +22,60 @@ namespace Rest_FIBRPN
             return $"Hello: {name}";
         }
 
-        [HttpGet]
-        [Route("movies")]
-        public ActionResult GetMovies() // visszaadja az összes Movie objektum listáját
-        {
-            Movie[] movies = MovieDatabaseController.movies.ToArray();
-            var dto = new GetMoviesDTO(movies);
-            return Ok(dto);
-        }
-
-        [HttpGet]
-        [Route("movies/{id}")]
-        public Movie GetMovie([FromRoute] int id) // visszaadja az adott azonosítójú Movie objektumot ha ilyen azonosítójú objektum nem létezik, akkor HTTP 404-es(not found) státuszkóddal tér vissza
-        {
-            var movie = movies.Find(x => x.Id == id);
-            if (!movies.Contains(movie))
-            {
-//                throw new HttpResponseException(HttpStatusCode.);
-            }
-            return movies.Find(x => x.Id == id);
-        }
-
         [HttpPost]
         [Route("movies")]
-        public void AddMovie([FromBody] AddMovieDTO movie) // beszúrja a kapott Movie objektumot (azonosítót a szerver rendel hozzá), visszaadja a szerver által hozzárendelt azonosítót
+        public IActionResult AddMovie([FromBody] Movie movie) // beszúrja a kapott Movie objektumot (azonosítót a szerver rendel hozzá), visszaadja a szerver által hozzárendelt azonosítót
         {
-            movies.Add(movie.asMovie());
+            Movies.Add(movie);
+            return Ok();
         }
 
         [HttpPut]
         [Route("movies/{id}")]
-        public void UpdateMovie([FromRoute] int id, [FromBody] Movie movie) // beszúrja vagy frissíti a kapott Movie objektumot, azonosítót a kliens rendel hozzá (ha még nem létezik ilyen azonosítójú objektum, akkor beszúr, egyébként frissít)
+        public IActionResult UpdateMovie([FromRoute] int id, [FromBody] Movie movie) // beszúrja vagy frissíti a kapott Movie objektumot, azonosítót a kliens rendel hozzá (ha még nem létezik ilyen azonosítójú objektum, akkor beszúr, egyébként frissít)
         {
-            var movieIdx = movies.IndexOf(movies.Find(x => x.Id == id));
-            movies[movieIdx] = movie;
+            var movieIdx = Movies.IndexOf(Movies.Find(x => x.Id == id));
+            movie.Id = id;
+            Movies[movieIdx] = movie;
+            return Ok();
         }
 
         [HttpDelete]
         [Route("movies/{id}")]
-        public void DeleteMovie([FromRoute] int id) // törli az adott azonosítójú Movie objektumot
+        public IActionResult DeleteMovie([FromRoute] int id) // törli az adott azonosítójú Movie objektumot
         {
-            movies.Remove(movies.Find(x => x.Id == id));
+            Movies.Remove(Movies.Find(x => x.Id == id));
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("movies/{id}")]
+        public ActionResult<Movie> GetMovie([FromRoute] int id) // visszaadja az adott azonosítójú Movie objektumot ha ilyen azonosítójú objektum nem létezik, akkor HTTP 404-es(not found) státuszkóddal tér vissza
+        {
+            var movie = Movies.Find(x => x.Id == id);
+            if (!Movies.Contains(movie))
+            {
+                return NotFound();
+            }
+            return Ok(movie);
+        }
+
+        [HttpGet]
+        [Route("movies")]
+        public ActionResult<List<Movie>> GetMovies() // visszaadja az összes Movie objektum listáját
+        {
+            var dto = new MoviesDTO()
+            {
+                Movies = MovieDatabaseController.Movies
+            };
+            return Ok(dto);
         }
 
         [HttpGet]
         [Route("movies/find")]
-        public Movie[] FindMovies([FromQuery] int year, [FromQuery] string orderby) // visszaadja az összes {year} évhez tartozó Movie objektum azonosítóját egy listában a listát rendezni kell a { field } paraméterben megadott kritérium alapján(Title esetén cím szerint, Director esetén a rendező neve szerint)
+        public ActionResult<Movie[]> FindMovies([FromQuery] int year, [FromQuery] string orderby) // visszaadja az összes {year} évhez tartozó Movie objektum azonosítóját egy listában a listát rendezni kell a { field } paraméterben megadott kritérium alapján(Title esetén cím szerint, Director esetén a rendező neve szerint)
         {
-            var moviesByYear = movies.FindAll(x => x.Year == year);
+            var moviesByYear = Movies.FindAll(x => x.Year == year);
             if (orderby == "Title")
             {
                 moviesByYear.Sort((x, y) => x.Title.CompareTo(y.Title));
@@ -76,7 +84,11 @@ namespace Rest_FIBRPN
             {
                 moviesByYear.Sort((x, y) => x.Director.CompareTo(y.Director));
             }
-            return moviesByYear.ToArray();
+            else
+            {
+                return BadRequest();
+            }
+            return Ok(moviesByYear.Select(x => x.Id).ToArray());
         }
     }
 }

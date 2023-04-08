@@ -1,51 +1,19 @@
 ﻿using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Rest_FIBRPN
 {
-    static class IdGenerator
+    [XmlRoot("movies")] // FIXME: Root element xml-ben ott van json-ben is
+    public class MoviesDTO
     {
-        private static int LastId = -1;
-        public static int GetNextId()
-        {
-            LastId++;
-            return LastId;
-        }
+        [XmlElement("movie")]
+        public List<Movie> Movies { get; set; }
     }
 
-    [DataContract]
-    public struct AddMovieDTO
+    [XmlRoot("movies")]
+    public class IdsDTO
     {
-
-        [DataMember]
-        public string Title { get; set; }
-
-        [DataMember]
-        public int Year { get; set; }
-
-        [DataMember]
-        public string Director { get; set; }
-
-        public Movie asMovie()
-        {
-            return new Movie()
-            {
-                Id = IdGenerator.GetNextId(),
-                Title = Title,
-                Year = Year,
-                Director = Director,
-                Actor = new string[0]
-            };
-        }
-    }
-
-    [DataContract]
-    public class GetMoviesDTO
-    {
-        [DataMember]
-        public Movie[] movie { get; set; }
-        public GetMoviesDTO(Movie[] movies) 
-        { 
-            movie = movies;
-        }
+        [XmlElement("id")]
+        public List<int> Ids { get; set; }
     }
 }
