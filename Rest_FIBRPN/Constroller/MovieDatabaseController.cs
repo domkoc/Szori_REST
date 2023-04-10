@@ -6,6 +6,7 @@ using System.Net;
 using System.Xml.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rest_FIBRPN
 {
@@ -13,7 +14,8 @@ namespace Rest_FIBRPN
     [Route("Rest_NEPTUN/resources/[controller]")]
     public class MovieDatabaseController : Controller
     {
-        private static List<Movie> Movies { get; set; } = new List<Movie>();
+        [JsonPropertyName("movie")]
+        private static MoviesList Movies { get; set; } = new MoviesList();
 
         [HttpGet]
         [Route("sayHello")]
@@ -27,15 +29,15 @@ namespace Rest_FIBRPN
         public IActionResult AddMovie([FromBody] Movie movie) // beszúrja a kapott Movie objektumot (azonosítót a szerver rendel hozzá), visszaadja a szerver által hozzárendelt azonosítót
         {
             Movies.Add(movie);
-            return Ok();
+            return Ok(new IdDTO(movie.getId()));
         }
 
         [HttpPut]
         [Route("movies/{id}")]
         public IActionResult UpdateMovie([FromRoute] int id, [FromBody] Movie movie) // beszúrja vagy frissíti a kapott Movie objektumot, azonosítót a kliens rendel hozzá (ha még nem létezik ilyen azonosítójú objektum, akkor beszúr, egyébként frissít)
         {
-            var movieIdx = Movies.IndexOf(Movies.Find(x => x.Id == id));
-            movie.Id = id;
+            var movieIdx = Movies.IndexOf(Movies.Find(x => x.getId() == id));
+            movie.setId(id);
             Movies[movieIdx] = movie;
             return Ok();
         }
@@ -44,7 +46,7 @@ namespace Rest_FIBRPN
         [Route("movies/{id}")]
         public IActionResult DeleteMovie([FromRoute] int id) // törli az adott azonosítójú Movie objektumot
         {
-            Movies.Remove(Movies.Find(x => x.Id == id));
+            Movies.Remove(Movies.Find(x => x.getId() == id));
             return Ok();
         }
 
@@ -52,7 +54,7 @@ namespace Rest_FIBRPN
         [Route("movies/{id}")]
         public ActionResult<Movie> GetMovie([FromRoute] int id) // visszaadja az adott azonosítójú Movie objektumot ha ilyen azonosítójú objektum nem létezik, akkor HTTP 404-es(not found) státuszkóddal tér vissza
         {
-            var movie = Movies.Find(x => x.Id == id);
+            var movie = Movies.Find(x => x.getId() == id);
             if (!Movies.Contains(movie))
             {
                 return NotFound();
@@ -68,7 +70,7 @@ namespace Rest_FIBRPN
             {
                 Movies = MovieDatabaseController.Movies
             };
-            return Ok(dto);
+            return Ok(MovieDatabaseController.Movies);
         }
 
         [HttpGet]
@@ -88,7 +90,7 @@ namespace Rest_FIBRPN
             {
                 return BadRequest();
             }
-            return Ok(moviesByYear.Select(x => x.Id).ToArray());
+            return Ok(new IdsDTO(moviesByYear.Select(x => x.getId()).ToArray()));
         }
     }
 }

@@ -10,10 +10,30 @@ namespace Rest_FIBRPN
         public List<Movie> Movies { get; set; }
     }
 
-    [XmlRoot("movies")]
+    [DataContract(Name = "result")]
+    public class IdDTO
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+
+        public IdDTO(int id)
+        {
+            Id = id;
+        }
+    }
+
+    [CollectionDataContract(Name = "id")]
+    public class IdsList : List<int> { }
+
+    [DataContract(Name = "movies")]
     public class IdsDTO
     {
-        [XmlElement("id")]
-        public List<int> Ids { get; set; }
+        [DataMember(Name = "id")]
+        public IdsList Id { get; set; } = new IdsList();
+
+        public IdsDTO(int[] ids)
+        {
+            Id.AddRange(ids);
+        }
     }
 }

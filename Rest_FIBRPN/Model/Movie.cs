@@ -1,4 +1,7 @@
-﻿using System.Runtime.Serialization;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace Rest_FIBRPN
 {
@@ -12,22 +15,34 @@ namespace Rest_FIBRPN
         }
     }
 
+    [XmlRoot("movies")]
+    public class MoviesList : List<Movie> { }
+
     [DataContract]
     public class Movie
     {
-        [DataMember]
-        public int Id { get; set; } = IdGenerator.GetNextId();
+        private int Id { get; set; } = IdGenerator.GetNextId();
 
         [DataMember]
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
 
         [DataMember]
-        public int Year { get; set; }
+        public int Year { get; set; } = 0;
 
         [DataMember]
-        public string Director { get; set; }
+        public string Director { get; set; } = "";
 
         [DataMember]
-        public string[] Actor { get; set; } = new string[0];
+        public string[] Actor { get; set; } = Array.Empty<string>();
+
+        public int getId()
+        {
+            return Id;
+        }
+
+        public void setId(int id)
+        {
+            Id = id;
+        }
     }
 }
