@@ -1,39 +1,29 @@
-﻿using System.Runtime.Serialization;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rest_FIBRPN
 {
-    [XmlRoot("movies")] // FIXME: Root element xml-ben ott van json-ben is
+    [XmlRoot(ElementName = "movies")]
     public class MoviesDTO
     {
-        [XmlElement("movie")]
+        [XmlElement(ElementName = "movie")]
+        [JsonPropertyName("movie")]
         public List<Movie> Movies { get; set; }
     }
 
-    [DataContract(Name = "result")]
+    [XmlRoot(ElementName = "result")]
     public class IdDTO
     {
-        [DataMember(Name = "id")]
+        [XmlElement(ElementName = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-
-        public IdDTO(int id)
-        {
-            Id = id;
-        }
     }
 
-    [CollectionDataContract(Name = "id")]
-    public class IdsList : List<int> { }
-
-    [DataContract(Name = "movies")]
+    [XmlRoot(ElementName = "movies")]
     public class IdsDTO
     {
-        [DataMember(Name = "id")]
-        public IdsList Id { get; set; } = new IdsList();
-
-        public IdsDTO(int[] ids)
-        {
-            Id.AddRange(ids);
-        }
+        [XmlElement(ElementName = "id")]
+        [JsonPropertyName("id")]
+        public List<int> Ids { get; set; } = new List<int>();
     }
 }

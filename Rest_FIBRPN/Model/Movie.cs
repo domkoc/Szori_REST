@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rest_FIBRPN
 {
@@ -18,22 +17,26 @@ namespace Rest_FIBRPN
     [XmlRoot("movies")]
     public class MoviesList : List<Movie> { }
 
-    [DataContract]
+    [XmlRoot(ElementName = "movie")]
     public class Movie
     {
         private int Id { get; set; } = IdGenerator.GetNextId();
 
-        [DataMember]
+        [XmlElement(ElementName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; } = "";
 
-        [DataMember]
+        [XmlElement(ElementName = "year")]
+        [JsonPropertyName("year")]
         public int Year { get; set; } = 0;
 
-        [DataMember]
+        [XmlElement(ElementName = "director")]
+        [JsonPropertyName("director")]
         public string Director { get; set; } = "";
 
-        [DataMember]
-        public string[] Actor { get; set; } = Array.Empty<string>();
+        [XmlElement(ElementName = "actor")]
+        [JsonPropertyName("actor")]
+        public List<string> Actor { get; set; } = new List<string>();
 
         public int getId()
         {

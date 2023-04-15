@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 namespace Rest_FIBRPN
 {
     [ApiController]
-    [Route("Rest_NEPTUN/resources/[controller]")]
+    [Route("Rest_FIBRPN/resources/[controller]")] // FIXME: Ez NEPTUN volt
     public class MovieDatabaseController : Controller
     {
         [JsonPropertyName("movie")]
@@ -29,7 +29,11 @@ namespace Rest_FIBRPN
         public IActionResult AddMovie([FromBody] Movie movie) // beszúrja a kapott Movie objektumot (azonosítót a szerver rendel hozzá), visszaadja a szerver által hozzárendelt azonosítót
         {
             Movies.Add(movie);
-            return Ok(new IdDTO(movie.getId()));
+            var dto = new IdDTO()
+            {
+                Id = movie.getId()
+            };
+            return Ok(dto);
         }
 
         [HttpPut]
@@ -38,7 +42,14 @@ namespace Rest_FIBRPN
         {
             var movieIdx = Movies.IndexOf(Movies.Find(x => x.getId() == id));
             movie.setId(id);
-            Movies[movieIdx] = movie;
+            if (movieIdx != -1)
+            {
+                Movies[movieIdx] = movie;
+            }
+            else
+            {
+                Movies.Add(movie);
+            }
             return Ok();
         }
 
@@ -70,7 +81,7 @@ namespace Rest_FIBRPN
             {
                 Movies = MovieDatabaseController.Movies
             };
-            return Ok(MovieDatabaseController.Movies);
+            return Ok(dto);
         }
 
         [HttpGet]
@@ -90,7 +101,11 @@ namespace Rest_FIBRPN
             {
                 return BadRequest();
             }
-            return Ok(new IdsDTO(moviesByYear.Select(x => x.getId()).ToArray()));
+            var dto = new IdsDTO()
+            {
+                Ids = moviesByYear.Select(x => x.getId()).ToList()
+            };
+            return Ok(dto);
         }
     }
 }
